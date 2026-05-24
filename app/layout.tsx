@@ -13,18 +13,22 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL(getSiteUrl()),
-  ...buildShareMetadata({
-    title: shareMetadata.home.title,
-    description: shareMetadata.home.description,
-    path: "/",
-  }),
-  title: {
-    default: shareMetadata.home.title,
-    template: `%s | ${SITE_NAME}`,
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const siteUrl = getSiteUrl();
+
+  return {
+    metadataBase: new URL(siteUrl),
+    ...buildShareMetadata({
+      title: shareMetadata.home.title,
+      description: shareMetadata.home.description,
+      path: "/",
+    }),
+    title: {
+      default: shareMetadata.home.title,
+      template: `%s | ${SITE_NAME}`,
+    },
+  };
+}
 
 export default function RootLayout({
   children,

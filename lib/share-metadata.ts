@@ -17,6 +17,9 @@ export function getSiteUrl(): string {
   const fromEnv = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "");
   if (fromEnv) return fromEnv;
 
+  const production = process.env.VERCEL_PROJECT_PRODUCTION_URL?.replace(/\/$/, "");
+  if (production) return `https://${production}`;
+
   const vercel = process.env.VERCEL_URL;
   if (vercel) return `https://${vercel}`;
 
@@ -34,6 +37,8 @@ export function buildShareMetadata({
 }) {
   const url = `${getSiteUrl()}${path}`;
 
+  const imagePath = path === "/" ? "/opengraph-image" : `${path}/opengraph-image`;
+
   return {
     title,
     description,
@@ -44,11 +49,20 @@ export function buildShareMetadata({
       title,
       description,
       url,
+      images: [
+        {
+          url: imagePath,
+          width: 1200,
+          height: 630,
+          alt: title,
+        },
+      ],
     },
     twitter: {
-      card: "summary" as const,
+      card: "summary_large_image" as const,
       title,
       description,
+      images: [imagePath],
     },
   };
 }
