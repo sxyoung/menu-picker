@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { buildShareMetadata, getSiteUrl, shareMetadata, SITE_NAME } from "@/lib/share-metadata";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -13,8 +14,16 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "메뉴 결정 V3",
-  description: "친구와 함께 메뉴를 정하는 앱",
+  metadataBase: new URL(getSiteUrl()),
+  ...buildShareMetadata({
+    title: shareMetadata.home.title,
+    description: shareMetadata.home.description,
+    path: "/",
+  }),
+  title: {
+    default: shareMetadata.home.title,
+    template: `%s | ${SITE_NAME}`,
+  },
 };
 
 export default function RootLayout({
