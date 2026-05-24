@@ -27,7 +27,12 @@ create policy "rooms_update" on rooms for update using (true) with check (true);
 
 create policy "menus_select" on menus for select using (true);
 create policy "menus_insert" on menus for insert with check (true);
+create policy "menus_update" on menus for update using (true) with check (true);
+create policy "menus_delete" on menus for delete using (true);
 
--- 4. 실시간 동기화 활성화
+-- 4. DELETE 실시간 이벤트에 컬럼 포함 (room_id 필터용)
+alter table menus replica identity full;
+
+-- 5. 실시간 동기화 활성화
 alter publication supabase_realtime add table menus;
 alter publication supabase_realtime add table rooms;

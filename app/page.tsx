@@ -74,10 +74,10 @@ export default function Home() {
   };
 
   return (
-    <div className="flex min-h-full flex-col bg-zinc-100">
-      <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-5 py-8">
+    <div className="flex min-h-0 flex-1 flex-col justify-center">
+      <main className="w-full px-5 py-6">
         <header className="mb-8 text-center">
-          <p className="text-sm font-medium text-orange-500">VERSION 2</p>
+          <p className="text-sm font-medium text-orange-500">VERSION 3</p>
           <h1 className="mt-1 text-2xl font-bold text-zinc-900">오늘 뭐 먹지?</h1>
           <p className="mt-1 text-sm text-zinc-500">친구와 함께 메뉴를 정해 보세요</p>
         </header>
