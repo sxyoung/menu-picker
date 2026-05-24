@@ -3,7 +3,7 @@
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
-import { getNickname } from "@/lib/room-code";
+import { getNickname, saveNickname } from "@/lib/room-code";
 import type { MenuItem, Room } from "@/lib/types";
 
 export default function RoomPage({ params }: { params: Promise<{ code: string }> }) {
@@ -17,8 +17,14 @@ export default function RoomPage({ params }: { params: Promise<{ code: string }>
   const [copied, setCopied] = useState<"link" | "code" | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [nickname, setNickname] = useState("");
+  const [showNicknameModal, setShowNicknameModal] = useState(false);
+  const [nicknameInput, setNicknameInput] = useState("");
+  const [nicknameError, setNicknameError] = useState("");
 
-  const nickname = getNickname();
+  useEffect(() => {
+    setNickname(getNickname());
+  }, []);
 
   useEffect(() => {
     const loadRoom = async () => {
@@ -45,10 +51,26 @@ export default function RoomPage({ params }: { params: Promise<{ code: string }>
 
       setMenus(menuData ?? []);
       setLoading(false);
+
+      if (!getNickname()) {
+        setShowNicknameModal(true);
+      }
     };
 
     loadRoom();
   }, [roomCode]);
+
+  const confirmNickname = () => {
+    const name = nicknameInput.trim();
+    if (!name) {
+      setNicknameError("닉네임을 입력해 주세요.");
+      return;
+    }
+    saveNickname(name);
+    setNickname(name);
+    setNicknameError("");
+    setShowNicknameModal(false);
+  };
 
   useEffect(() => {
     if (!room) return;
@@ -103,7 +125,7 @@ export default function RoomPage({ params }: { params: Promise<{ code: string }>
     const name = input.trim();
     if (!name) return;
     if (!nickname) {
-      setError("닉네임이 없어요. 홈에서 다시 입장해 주세요.");
+      setShowNicknameModal(true);
       return;
     }
 
@@ -180,6 +202,46 @@ export default function RoomPage({ params }: { params: Promise<{ code: string }>
 
   return (
     <div className="flex min-h-full flex-col bg-zinc-100">
+      {showNicknameModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-5">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="nickname-modal-title"
+            className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl"
+          >
+            <h2 id="nickname-modal-title" className="text-lg font-bold text-zinc-900">
+              닉네임 설정
+            </h2>
+            <p className="mt-1 text-sm text-zinc-500">
+              방에 참여하려면 사용할 이름을 입력해 주세요.
+            </p>
+            <input
+              type="text"
+              value={nicknameInput}
+              onChange={(e) => {
+                setNicknameInput(e.target.value);
+                setNicknameError("");
+              }}
+              onKeyDown={(e) => e.key === "Enter" && confirmNickname()}
+              placeholder="이름 입력"
+              autoFocus
+              className="mt-4 w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-zinc-900 placeholder:text-zinc-400 outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+            />
+            {nicknameError && (
+              <p className="mt-2 text-sm text-red-600">{nicknameError}</p>
+            )}
+            <button
+              type="button"
+              onClick={confirmNickname}
+              className="mt-4 w-full rounded-xl bg-orange-500 py-3 text-sm font-semibold text-white transition-colors hover:bg-orange-600"
+            >
+              참여하기
+            </button>
+          </div>
+        </div>
+      )}
+
       <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-5 py-8">
         <header className="mb-6">
           <Link href="/" className="text-sm text-zinc-400">

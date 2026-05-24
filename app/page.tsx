@@ -47,10 +47,6 @@ export default function Home() {
     const name = nickname.trim();
     const code = joinCode.trim().toUpperCase();
 
-    if (!name) {
-      setError("닉네임을 입력해 주세요.");
-      return;
-    }
     if (code.length !== 6) {
       setError("방 코드는 6자리예요.");
       return;
@@ -58,7 +54,9 @@ export default function Home() {
 
     setLoading(true);
     setError("");
-    saveNickname(name);
+    if (name) {
+      saveNickname(name);
+    }
 
     const { data, error: selectError } = await supabase
       .from("rooms")
